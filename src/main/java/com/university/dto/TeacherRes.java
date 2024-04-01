@@ -13,7 +13,7 @@ public class TeacherRes {
   private String address;
   private String email;
   private Integer phone;
-  private String university_code;
+  private String universityCode;
   private Integer age;
   private String sex;
   private Date birthdate;

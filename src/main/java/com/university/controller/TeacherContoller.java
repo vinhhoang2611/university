@@ -1,7 +1,7 @@
 package com.university.controller;
 
 import com.university.dto.TeacherReq;
-import com.university.entity.TeacherEntity;
+import com.university.dto.TeacherRes;
 import com.university.service.CommonException;
 import com.university.service.TeacherService;
 import java.util.List;
@@ -59,7 +59,7 @@ public class TeacherContoller {
   }
 
   @GetMapping("/view/{code}")
-  public ResponseEntity<List<TeacherEntity>> getAll(@PathVariable String code) {
+  public ResponseEntity<List<TeacherRes>> getAll(@PathVariable String code) {
     return new ResponseEntity<>(teacherService.getAll(code), HttpStatus.OK);
   }
 }

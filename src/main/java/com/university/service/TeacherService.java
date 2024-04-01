@@ -1,7 +1,7 @@
 package com.university.service;
 
 import com.university.dto.TeacherReq;
-import com.university.entity.TeacherEntity;
+import com.university.dto.TeacherRes;
 import java.util.List;
 
 public interface TeacherService {
@@ -12,5 +12,5 @@ public interface TeacherService {
 
   String delete(String code);
 
-  List<TeacherEntity> getAll(String code);
+  List<TeacherRes> getAll(String code);
 }

@@ -3,6 +3,7 @@ package com.university.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 public class StudentReq {
   @NotBlank(message = "Code must not be null or blank")
   private String code;
+  @NotEmpty(message = "name must not be null or blank")
   private String name;
   private String email;
   private Integer phone;

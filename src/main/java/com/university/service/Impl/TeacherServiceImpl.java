@@ -1,11 +1,13 @@
 package com.university.service.Impl;
 
 import com.university.dto.TeacherReq;
+import com.university.dto.TeacherRes;
 import com.university.entity.TeacherEntity;
 import com.university.mapper.TeacherMapper;
 import com.university.repository.TeacherRepository;
 import com.university.service.CommonException;
 import com.university.service.TeacherService;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,12 +32,14 @@ public class TeacherServiceImpl implements TeacherService {
   @Override
   public String update(String code, TeacherReq teacherReq) {
     TeacherEntity teacherEntity = teacherRepository.findByCode(code);
-    getException(null, teacherReq.getEmail(), null, teacherReq.getPhone());
+
+    getException(code, teacherReq.getEmail(), null, teacherReq.getPhone());
+
     teacherEntity.setName(teacherReq.getName());
     teacherEntity.setAddress(teacherReq.getAddress());
     teacherEntity.setEmail(teacherReq.getEmail());
     teacherEntity.setPhone(teacherReq.getPhone());
-    teacherEntity.setUniversity_code(teacherReq.getUniversity_code());
+    teacherEntity.setUniversityCode(teacherReq.getUniversityCode());
     teacherEntity.setAge(teacherReq.getAge());
     teacherEntity.setSex(teacherReq.getSex());
     teacherEntity.setBirthdate(teacherReq.getBirthdate());
@@ -55,9 +59,15 @@ public class TeacherServiceImpl implements TeacherService {
   }
 
   @Override
-  public List<TeacherEntity> getAll(String code) {
+  public List<TeacherRes> getAll(String code) {
     List<TeacherEntity> teacherEntityList = teacherRepository.findByCodeOrNull(code);
-    return teacherEntityList;
+    List<TeacherRes> listTeacher = new ArrayList<>();
+    for (TeacherEntity teacher : teacherEntityList) {
+      TeacherRes teacherRes;
+      teacherRes = TeacherMapper.INSTANCE.teacherEntityToRes(teacher);
+      listTeacher.add(teacherRes);
+    }
+    return listTeacher;
   }
 
   private void getException(String code, String email, TeacherEntity teacherEntity, Integer phone) {
