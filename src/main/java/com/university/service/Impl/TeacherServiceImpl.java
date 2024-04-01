@@ -1,16 +1,14 @@
 package com.university.service.Impl;
 
 import com.university.dto.TeacherReq;
-import com.university.dto.TeacherRes;
 import com.university.entity.TeacherEntity;
 import com.university.mapper.TeacherMapper;
-import com.university.mapper.TeacherMapperImpl;
 import com.university.repository.TeacherRepository;
+import com.university.service.CommonException;
 import com.university.service.TeacherService;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,21 +16,21 @@ public class TeacherServiceImpl implements TeacherService {
 
   @Autowired
   TeacherRepository teacherRepository;
-  TeacherMapper teacherMapper = new TeacherMapperImpl();
 
   @Override
-  public TeacherRes create(TeacherReq teacherReq) {
-    TeacherEntity teacherEntity = teacherMapper.teacherReqToEntity(teacherReq);
+  public String create(TeacherReq teacherReq) {
+    TeacherEntity teacherEntity = TeacherMapper.INSTANCE.teacherReqToEntity(teacherReq);
 
-    TeacherEntity teacherEntitySave = teacherRepository.save(teacherEntity);
-    return teacherMapper.teacherEntityToRes(teacherEntitySave);
+    getException(teacherReq.getCode(), teacherReq.getEmail(), teacherEntity, teacherReq.getPhone());
+
+    teacherRepository.save(teacherEntity);
+    return "Created!!";
   }
 
   @Override
-  public TeacherRes update(String code, TeacherReq teacherReq) {
+  public String update(String code, TeacherReq teacherReq) {
     TeacherEntity teacherEntity = teacherRepository.findByCode(code);
-
-    teacherEntity.setCode(teacherReq.getCode());
+    getException(null, teacherReq.getEmail(), null, teacherReq.getPhone());
     teacherEntity.setName(teacherReq.getName());
     teacherEntity.setAddress(teacherReq.getAddress());
     teacherEntity.setEmail(teacherReq.getEmail());
@@ -44,23 +42,38 @@ public class TeacherServiceImpl implements TeacherService {
     teacherEntity.setSubject(teacherReq.getSubject());
     teacherEntity.setSalary(teacherReq.getSalary());
 
-    TeacherEntity teacherEntitySave = teacherRepository.save(teacherEntity);
+    teacherRepository.save(teacherEntity);
 
-    return teacherMapper.teacherEntityToRes(teacherEntitySave);
+    return "Update Successful!!";
   }
 
   @Override
-  public Map<String, Boolean> delete(String code) {
+  public String delete(String code) {
     TeacherEntity teacherEntity = teacherRepository.findByCode(code);
     teacherRepository.delete(teacherEntity);
-    Map<String, Boolean> respone = new HashMap<>();
-    respone.put("Delete", Boolean.TRUE);
-    return respone;
+    return "Deleted!!";
   }
 
   @Override
   public List<TeacherEntity> getAll(String code) {
     List<TeacherEntity> teacherEntityList = teacherRepository.findByCodeOrNull(code);
     return teacherEntityList;
+  }
+
+  private void getException(String code, String email, TeacherEntity teacherEntity, Integer phone) {
+    String emailRegex = "^[A-Za-z0-9]+[A-Za-z0-9]*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)$";
+    String codeRegex = "^[A-Za]{2}+[0-9]{5}$";
+    if (code.isEmpty()) {
+      throw new CommonException("code is not null", HttpStatus.BAD_REQUEST, "1001");
+    } else if (teacherEntity != null) {
+      throw new CommonException("Code already exists", HttpStatus.BAD_REQUEST, "1001");
+    } else if (!email.matches(emailRegex)) {
+      throw new CommonException("Email Wrong Format!", HttpStatus.BAD_REQUEST, "1001");
+    } else if (!code.matches(codeRegex)) {
+      throw new CommonException("Code Wrong Format!", HttpStatus.BAD_REQUEST, "1001");
+    } else if (phone.toString().length() < 10) {
+      throw new CommonException("Phone number with minimum 10 characters!", HttpStatus.BAD_REQUEST,
+          "202");
+    }
   }
 }

@@ -2,12 +2,10 @@ package com.university.controller;
 
 import com.university.dto.UniversityReq;
 import com.university.dto.UniversityRes;
-import com.university.entity.UniversityEntity;
+import com.university.service.CommonException;
 import com.university.service.UniversityService;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,25 +25,41 @@ public class UniversityController {
   UniversityService universityService;
 
   @PostMapping("/create")
-  public ResponseEntity<UniversityRes> create(@RequestBody UniversityReq universityReq) {
-    UniversityRes universityRes = universityService.create(universityReq);
+  public ResponseEntity<String> create(@RequestBody UniversityReq universityReq) {
+    String universityRes;
+    try {
+      universityRes = universityService.create(universityReq);
+    } catch (CommonException e) {
+      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
+    }
     return new ResponseEntity<>(universityRes, HttpStatus.OK);
   }
 
   @PutMapping("/update/{code}")
-  public ResponseEntity<UniversityRes> update(@PathVariable String code,
+  public ResponseEntity<String> update(@PathVariable String code,
       @RequestBody UniversityReq universityReq) {
-    UniversityRes universityRes = universityService.update(code, universityReq);
+    String universityRes;
+    try {
+      universityRes = universityService.update(code, universityReq);
+    } catch (CommonException e) {
+      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
+    }
     return new ResponseEntity<>(universityRes, HttpStatus.OK);
   }
 
   @DeleteMapping("/delete/{code}")
-  public ResponseEntity<Map<String, Boolean>> delete(@PathVariable String code) {
-    return new ResponseEntity<>(universityService.delete(code), HttpStatus.OK);
+  public ResponseEntity<String> delete(@PathVariable String code) {
+    String del;
+    try {
+      del = universityService.delete(code);
+    } catch (CommonException e) {
+      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
+    }
+    return new ResponseEntity<>(del, HttpStatus.OK);
   }
 
   @GetMapping("/view/{code}")
-  public ResponseEntity<List<UniversityEntity>> getAll(@PathVariable String code) {
+  public ResponseEntity<List<UniversityRes>> getAll(@PathVariable String code) {
     return new ResponseEntity<>(universityService.getAll(code), HttpStatus.OK);
   }
 }

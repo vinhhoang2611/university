@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface TeacherRepository extends JpaRepository<TeacherEntity,Long> {
-  @Query("SELECT t FROM TeacherEntity t WHERE t.code LIKE %:code%")
+  @Query("SELECT t FROM TeacherEntity t WHERE t.code = :code")
   TeacherEntity findByCode(@Param("code") String code);
 
   @Query("SELECT t FROM TeacherEntity t WHERE (t.code LIKE %:code% OR :code IS NULL)")

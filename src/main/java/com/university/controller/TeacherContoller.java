@@ -1,11 +1,10 @@
 package com.university.controller;
 
 import com.university.dto.TeacherReq;
-import com.university.dto.TeacherRes;
 import com.university.entity.TeacherEntity;
+import com.university.service.CommonException;
 import com.university.service.TeacherService;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,21 +25,37 @@ public class TeacherContoller {
   TeacherService teacherService;
 
   @PostMapping("/create")
-  public ResponseEntity<TeacherRes> create(@RequestBody TeacherReq teacherReq) {
-    TeacherRes teacherRes = teacherService.create(teacherReq);
+  public ResponseEntity<String> create(@RequestBody TeacherReq teacherReq) {
+    String teacherRes;
+    try {
+      teacherRes = teacherService.create(teacherReq);
+    } catch (CommonException e) {
+      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
+    }
     return new ResponseEntity<>(teacherRes, HttpStatus.OK);
   }
 
   @PutMapping("/update/{code}")
-  public ResponseEntity<TeacherRes> update(@PathVariable String code,
+  public ResponseEntity<String> update(@PathVariable String code,
       @RequestBody TeacherReq teacherReq) {
-    TeacherRes teacherRes = teacherService.update(code, teacherReq);
+    String teacherRes;
+    try {
+      teacherRes = teacherService.update(code, teacherReq);
+    } catch (CommonException e) {
+      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
+    }
     return new ResponseEntity<>(teacherRes, HttpStatus.OK);
   }
 
   @DeleteMapping("/delete/{code}")
-  public ResponseEntity<Map<String, Boolean>> delete(@PathVariable String code) {
-    return new ResponseEntity<>(teacherService.delete(code), HttpStatus.OK);
+  public ResponseEntity<String> delete(@PathVariable String code) {
+    String del;
+    try {
+      del = teacherService.delete(code);
+    } catch (CommonException e) {
+      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
+    }
+    return new ResponseEntity<>(del, HttpStatus.OK);
   }
 
   @GetMapping("/view/{code}")
