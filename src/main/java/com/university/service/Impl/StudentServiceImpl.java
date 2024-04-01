@@ -3,7 +3,7 @@ package com.university.service.Impl;
 import com.university.dto.StudentReq;
 import com.university.dto.StudentRes;
 import com.university.entity.StudentEntity;
-import com.university.mapper.StudentEntityReqMapper;
+import com.university.mapper.StudentMapper;
 import com.university.repository.StudentRepository;
 import com.university.service.CommonException;
 import com.university.service.StudentService;
@@ -25,7 +25,7 @@ public class StudentServiceImpl implements StudentService {
     StudentEntity studentEntityCheck = studentRepository.findByCode(studentReq.getCode());
     getException(studentReq.getCode(), studentReq.getEmail(), studentEntityCheck,
         studentReq.getPhone());
-    StudentEntity studentEntity = StudentEntityReqMapper.INSTANCE.reqToEntity(studentReq);
+    StudentEntity studentEntity = StudentMapper.INSTANCE.reqToEntity(studentReq);
 
     studentRepository.save(studentEntity);
     return "Created!!";
@@ -68,7 +68,7 @@ public class StudentServiceImpl implements StudentService {
     List<StudentRes> listStudent = new ArrayList<>();
     for (StudentEntity student : studentEntityList){
       StudentRes studentRes;
-      studentRes = StudentEntityReqMapper.INSTANCE.entityToRes(student);
+      studentRes = StudentMapper.INSTANCE.entityToRes(student);
       listStudent.add(studentRes);
     }
     return listStudent;
