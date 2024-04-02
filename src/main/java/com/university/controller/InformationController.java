@@ -1,10 +1,9 @@
 package com.university.controller;
 
-import com.university.dto.StudentReq;
-import com.university.dto.StudentRes;
+import com.university.dto.InformationReq;
+import com.university.dto.InformationRes;
 import com.university.service.CommonException;
-import com.university.service.StudentService;
-import jakarta.validation.Valid;
+import com.university.service.InformationService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,49 +18,48 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/student/")
-public class StudentController {
+@RequestMapping("/information/")
+public class InformationController {
 
   @Autowired
-  StudentService studentService;
+  InformationService informationService;
 
   @PostMapping("/")
-  public ResponseEntity<String> createStudent(@Valid @RequestBody StudentReq studentReq) {
-    String studentRes;
+  public ResponseEntity<String> create(@RequestBody InformationReq informationReq) {
+    String create;
     try {
-      studentRes = studentService.create(studentReq);
+      create = informationService.create(informationReq);
     } catch (CommonException e) {
       return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
     }
-    return new ResponseEntity<>(studentRes, HttpStatus.CREATED);
+    return new ResponseEntity<>(create, HttpStatus.CREATED);
   }
 
   @PutMapping("/")
-  public ResponseEntity<String> updateStudent(@RequestParam String code,
-      @RequestBody StudentReq studentReq) {
-    String studentRes;
+  public ResponseEntity<String> update(@RequestParam String code,
+      @RequestBody InformationReq informationReq) {
+    String update;
     try {
-      studentRes = studentService.update(code, studentReq);
+      update = informationService.update(code, informationReq);
     } catch (CommonException e) {
       return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
     }
-    return new ResponseEntity<>(studentRes, HttpStatus.OK);
+    return new ResponseEntity<>(update, HttpStatus.OK);
   }
 
   @DeleteMapping("/")
   public ResponseEntity<String> delete(@RequestParam String code) {
-    String del;
+    String delete;
     try {
-      del = studentService.delete(code);
+      delete = informationService.delete(code);
     } catch (CommonException e) {
       return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
     }
-    return new ResponseEntity<>(del, HttpStatus.OK);
-
+    return new ResponseEntity<>(delete, HttpStatus.OK);
   }
 
   @GetMapping("/")
-  public ResponseEntity<List<StudentRes>> getAll(@RequestParam(required = false) String code) {
-    return new ResponseEntity<>(studentService.getAll(code), HttpStatus.OK);
+  public ResponseEntity<List<InformationRes>> getAll(@RequestParam String code){
+    return new ResponseEntity<>(informationService.getAll(code),HttpStatus.OK);
   }
 }
