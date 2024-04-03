@@ -6,6 +6,7 @@ import com.university.entity.ScheduleEntity;
 import com.university.mapper.ScheduleMapper;
 import com.university.repository.ScheduleRepository;
 import com.university.service.ScheduleService;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,30 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Override
   public String update(String code, ScheduleReq scheduleReq) {
-    ScheduleEntity scheduleEntity;
-    return null;
+    ScheduleEntity scheduleEntity = scheduleRepository.findByCode(code);
+
+    ScheduleEntity scheduleEntitySave = ScheduleMapper.INSTANCE.updSchedule(scheduleReq,scheduleEntity);
+    scheduleRepository.save(scheduleEntitySave);
+    return "Update Successful!!";
   }
 
   @Override
   public String delete(String code) {
-    return null;
+    ScheduleEntity scheduleEntity = scheduleRepository.findByCode(code);
+
+    scheduleRepository.delete(scheduleEntity);
+    return "Deleted!!";
   }
 
   @Override
   public List<ScheduleRes> getAll(String code) {
-    return null;
+    List<ScheduleEntity> scheduleEntity = scheduleRepository.findbyCodeOrNull(code);
+    List<ScheduleRes> scheduleResList = new ArrayList<>();
+    for (ScheduleEntity schedule : scheduleEntity){
+      ScheduleRes scheduleRes;
+      scheduleRes = ScheduleMapper.INSTANCE.entiyToRes(schedule);
+      scheduleResList.add(scheduleRes);
+    }
+    return scheduleResList;
   }
 }
