@@ -4,6 +4,7 @@ import com.university.dto.UniversityReq;
 import com.university.dto.UniversityRes;
 import com.university.service.CommonException;
 import com.university.service.UniversityService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class UniversityController {
   UniversityService universityService;
 
   @PostMapping("/create")
-  public ResponseEntity<String> create(@RequestBody UniversityReq universityReq) {
+  public ResponseEntity<String> create(@Valid @RequestBody UniversityReq universityReq) {
     String universityRes;
     try {
       universityRes = universityService.create(universityReq);
@@ -37,7 +38,7 @@ public class UniversityController {
 
   @PutMapping("/update/{code}")
   public ResponseEntity<String> update(@PathVariable String code,
-      @RequestBody UniversityReq universityReq) {
+      @Valid @RequestBody UniversityReq universityReq) {
     String universityRes;
     try {
       universityRes = universityService.update(code, universityReq);

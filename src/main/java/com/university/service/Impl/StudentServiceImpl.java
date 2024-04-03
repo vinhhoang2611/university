@@ -38,20 +38,12 @@ public class StudentServiceImpl implements StudentService {
   @Override
   public String update(String code, StudentReq studentReq) {
     StudentEntity studentEntity = studentRepository.findByCode(code);
-    getException(null, studentReq.getEmail(), null,
+    getException(code, studentReq.getEmail(), null,
         studentReq.getPhone(),studentReq.getUniversityCode());
-    studentEntity.setCode(studentReq.getCode());
-    studentEntity.setName(studentReq.getName());
-    studentEntity.setEmail(studentReq.getEmail());
-    studentEntity.setPhone(studentReq.getPhone());
-    studentEntity.setUniversityCode(studentReq.getUniversityCode());
-    studentEntity.setAge(studentReq.getAge());
-    studentEntity.setSemester(studentReq.getSemester());
-    studentEntity.setSex(studentReq.getSex());
-    studentEntity.setBirthdate(studentReq.getBirthdate());
-    studentEntity.setMajorsCode(studentReq.getMajorsCode());
 
-    studentRepository.save(studentEntity);
+    StudentEntity studentEntitySave = StudentMapper.INSTANCE.updStudent(studentReq,studentEntity);
+
+    studentRepository.save(studentEntitySave);
 
     return "Update Successful!!";
   }

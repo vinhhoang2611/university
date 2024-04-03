@@ -4,6 +4,7 @@ import com.university.dto.TeacherReq;
 import com.university.dto.TeacherRes;
 import com.university.service.CommonException;
 import com.university.service.TeacherService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class TeacherContoller {
   TeacherService teacherService;
 
   @PostMapping("/create")
-  public ResponseEntity<String> create(@RequestBody TeacherReq teacherReq) {
+  public ResponseEntity<String> create(@Valid @RequestBody TeacherReq teacherReq) {
     String teacherRes;
     try {
       teacherRes = teacherService.create(teacherReq);
@@ -37,7 +38,7 @@ public class TeacherContoller {
 
   @PutMapping("/update/{code}")
   public ResponseEntity<String> update(@PathVariable String code,
-      @RequestBody TeacherReq teacherReq) {
+      @Valid @RequestBody TeacherReq teacherReq) {
     String teacherRes;
     try {
       teacherRes = teacherService.update(code, teacherReq);

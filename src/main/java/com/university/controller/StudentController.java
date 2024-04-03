@@ -38,7 +38,7 @@ public class StudentController {
 
   @PutMapping("/")
   public ResponseEntity<String> updateStudent(@RequestParam String code,
-      @RequestBody StudentReq studentReq) {
+      @Valid @RequestBody StudentReq studentReq) {
     String studentRes;
     try {
       studentRes = studentService.update(code, studentReq);
