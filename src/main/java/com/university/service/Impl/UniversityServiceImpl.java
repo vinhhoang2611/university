@@ -7,10 +7,12 @@ import com.university.mapper.UniversityMapper;
 import com.university.repository.UniversityRepository;
 import com.university.service.CommonException;
 import com.university.service.UniversityService;
+import com.university.service.exception.GlobalException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,47 +20,57 @@ public class UniversityServiceImpl implements UniversityService {
 
   @Autowired
   UniversityRepository universityRepository;
-
+  @Autowired
+  GlobalException globalException;
 
   @Override
-  public String create(UniversityReq universityReq) {
+  public ResponseEntity<String> create(UniversityReq universityReq) {
     UniversityEntity university = UniversityMapper.INSTANCE.universityReqToEntity(universityReq);
-    getException(universityReq.getCode(), universityReq.getEmail(), university,
-        universityReq.getPhone());
+    try {
+      getException(universityReq.getCode(), universityReq.getEmail(), university,
+          universityReq.getPhone());
+    } catch (CommonException e) {
+      return globalException.handleCommonException(e);
+    }
     universityRepository.save(university);
-    return "Created!!";
+
+    return new ResponseEntity<>("Created!!", HttpStatus.OK);
   }
 
   @Override
-  public String update(String code, UniversityReq universityReq) {
+  public ResponseEntity<String> update(String code, UniversityReq universityReq) {
     UniversityEntity universityEntity = universityRepository.findByCode(code);
+    try {
+      getException(code, universityReq.getEmail(), null, universityReq.getPhone());
+    } catch (CommonException e) {
+      return globalException.handleCommonException(e);
+    }
+    UniversityEntity universityEntitySave = UniversityMapper.INSTANCE.updUniver(universityReq,
+        universityEntity);
 
-    getException(code, universityReq.getEmail(), null, universityReq.getPhone());
-
-    universityEntity.setName(universityReq.getName());
-    universityEntity.setEmail(universityReq.getEmail());
-    universityEntity.setManager(universityReq.getManager());
-    universityEntity.setPhone(universityReq.getPhone());
-    universityEntity.setAddress(universityReq.getAddress());
-    universityEntity.setQuantityStudent(universityReq.getQuantityStudent());
-
-    universityRepository.save(universityEntity);
-    return "Update Successful!!";
+    universityRepository.save(universityEntitySave);
+    return new ResponseEntity<>("Update Successful!!", HttpStatus.OK);
   }
 
   @Override
-  public String delete(String code) {
+  public ResponseEntity<String> delete(String code) {
     UniversityEntity university = universityRepository.findByCode(code);
+    try {
+      if (code.isEmpty()) {
+        throw new CommonException("Code is not null!!", HttpStatus.BAD_REQUEST, "1001");
+      }
+    } catch (CommonException e) {
+      return globalException.handleCommonException(e);
+    }
     universityRepository.delete(university);
-
-    return "Deleted!!";
+    return new ResponseEntity<>("Deleted!!", HttpStatus.OK);
   }
 
   @Override
   public List<UniversityRes> getAll(String code) {
     List<UniversityEntity> universityEntityList = universityRepository.findByCodeOrNull(code);
     List<UniversityRes> listRes = new ArrayList<>();
-    for(UniversityEntity uniEntity : universityEntityList){
+    for (UniversityEntity uniEntity : universityEntityList) {
       UniversityRes universityRes;
       universityRes = UniversityMapper.INSTANCE.universityEntityToRes(uniEntity);
       listRes.add(universityRes);

@@ -7,9 +7,10 @@ import com.university.entity.StudentEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface StudentMapper {
   StudentMapper INSTANCE = Mappers.getMapper(StudentMapper.class);
   StudentEntity reqToEntity(StudentReq req);

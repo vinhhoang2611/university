@@ -2,7 +2,6 @@ package com.university.controller;
 
 import com.university.dto.StudentReq;
 import com.university.dto.StudentRes;
-import com.university.service.CommonException;
 import com.university.service.StudentService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,36 +26,18 @@ public class StudentController {
 
   @PostMapping("/")
   public ResponseEntity<String> createStudent(@Valid @RequestBody StudentReq studentReq) {
-    String studentRes;
-    try {
-      studentRes = studentService.create(studentReq);
-    } catch (CommonException e) {
-      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
-    }
-    return new ResponseEntity<>(studentRes, HttpStatus.CREATED);
+    return studentService.create(studentReq);
   }
 
   @PutMapping("/")
   public ResponseEntity<String> updateStudent(@RequestParam String code,
       @Valid @RequestBody StudentReq studentReq) {
-    String studentRes;
-    try {
-      studentRes = studentService.update(code, studentReq);
-    } catch (CommonException e) {
-      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
-    }
-    return new ResponseEntity<>(studentRes, HttpStatus.OK);
+    return studentService.update(code, studentReq);
   }
 
   @DeleteMapping("/")
   public ResponseEntity<String> delete(@RequestParam String code) {
-    String del;
-    try {
-      del = studentService.delete(code);
-    } catch (CommonException e) {
-      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
-    }
-    return new ResponseEntity<>(del, HttpStatus.OK);
+    return studentService.delete(code);
 
   }
 

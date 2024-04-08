@@ -7,10 +7,12 @@ import com.university.mapper.InformationMapper;
 import com.university.repository.InformationRepository;
 import com.university.service.CommonException;
 import com.university.service.InformationService;
+import com.university.service.exception.GlobalException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service // component
@@ -19,35 +21,46 @@ public class InfomationServiceImpl implements InformationService {
   @Autowired
   InformationRepository informationRepository;
 
+  @Autowired
+  GlobalException globalException;
 
   @Override
-  public String create(InformationReq informationReq) {
+  public ResponseEntity<String> create(InformationReq informationReq) {
     InformationEntity informationEntity = InformationMapper.INSTANCE.inforReqToEntity(
         informationReq);
-    getException(informationReq.getUsername(), informationReq.getPassword(),
-        informationReq.getRePassword(), informationReq.getEmail());
+    try {
+      getException(informationReq.getUsername(), informationReq.getPassword(),
+          informationReq.getRePassword(), informationReq.getEmail());
+    }catch (CommonException e){
+      return globalException.handleCommonException(e);
+    }
     informationRepository.save(informationEntity);
-    return "Created!!";
+    return new ResponseEntity<>("Created!!", HttpStatus.OK);
   }
 
   @Override
-  public String update(String code, InformationReq informationReq) {
+  public ResponseEntity<String> update(String code, InformationReq informationReq) {
     InformationEntity informationEntity = informationRepository.getByCode(code);
-
+    try {
+      getException(informationReq.getUsername(), informationReq.getPassword(),
+          informationReq.getRePassword(), informationReq.getEmail());
+    }catch (CommonException e){
+      return globalException.handleCommonException(e);
+    }
     InformationEntity informationEntitySave = InformationMapper.INSTANCE.mapInformation(
         informationReq, informationEntity);
 
     informationRepository.save(informationEntitySave);
-    return "Update Successful!!";
+    return new ResponseEntity<>("Update Successful!!",HttpStatus.OK);
   }
 
   @Override
-  public String delete(String code) {
+  public ResponseEntity<String> delete(String code) {
     InformationEntity informationEntity = informationRepository.getByCode(code);
 
     informationRepository.delete(informationEntity);
 
-    return "Deleted!!";
+    return new ResponseEntity<>("Deleted!!",HttpStatus.OK);
   }
 
   @Override
@@ -62,7 +75,7 @@ public class InfomationServiceImpl implements InformationService {
     return resList;
   }
 
-  private void getException(String username, String password, String rePassword, String email) {
+  private void getException(String username, String password, String rePassword, String email) throws CommonException {
     String emailRegex = "^[A-Za-z0-9]+[A-Za-z0-9]*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)$";
     String user = informationRepository.getByName(username);
     if (!email.matches(emailRegex)) {

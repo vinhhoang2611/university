@@ -7,10 +7,12 @@ import com.university.mapper.TeacherMapper;
 import com.university.repository.TeacherRepository;
 import com.university.service.CommonException;
 import com.university.service.TeacherService;
+import com.university.service.exception.GlobalException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,44 +20,49 @@ public class TeacherServiceImpl implements TeacherService {
 
   @Autowired
   TeacherRepository teacherRepository;
+  @Autowired
+  GlobalException globalException;
 
   @Override
-  public String create(TeacherReq teacherReq) {
+  public ResponseEntity<String> create(TeacherReq teacherReq) {
     TeacherEntity teacherEntity = TeacherMapper.INSTANCE.teacherReqToEntity(teacherReq);
-
-    getException(teacherReq.getCode(), teacherReq.getEmail(), teacherEntity, teacherReq.getPhone());
-
+    try {
+      getException(teacherReq.getCode(), teacherReq.getEmail(), teacherEntity,
+          teacherReq.getPhone());
+    }catch (CommonException e){
+      return globalException.handleCommonException(e);
+    }
     teacherRepository.save(teacherEntity);
-    return "Created!!";
+    return new ResponseEntity<>("Created!!",HttpStatus.OK);
   }
 
   @Override
-  public String update(String code, TeacherReq teacherReq) {
+  public ResponseEntity<String> update(String code, TeacherReq teacherReq) {
     TeacherEntity teacherEntity = teacherRepository.findByCode(code);
+    try {
+      getException(code, teacherReq.getEmail(), null, teacherReq.getPhone());
+    }catch (CommonException e){
+      return globalException.handleCommonException(e);
+    }
+    TeacherEntity teacherEntitySave = TeacherMapper.INSTANCE.updTeacher(teacherReq, teacherEntity);
 
-    getException(code, teacherReq.getEmail(), null, teacherReq.getPhone());
+    teacherRepository.save(teacherEntitySave);
 
-    teacherEntity.setName(teacherReq.getName());
-    teacherEntity.setAddress(teacherReq.getAddress());
-    teacherEntity.setEmail(teacherReq.getEmail());
-    teacherEntity.setPhone(teacherReq.getPhone());
-    teacherEntity.setUniversityCode(teacherReq.getUniversityCode());
-    teacherEntity.setAge(teacherReq.getAge());
-    teacherEntity.setSex(teacherReq.getSex());
-    teacherEntity.setBirthdate(teacherReq.getBirthdate());
-    teacherEntity.setSubject(teacherReq.getSubject());
-    teacherEntity.setSalary(teacherReq.getSalary());
-
-    teacherRepository.save(teacherEntity);
-
-    return "Update Successful!!";
+    return new ResponseEntity<>("Update Successful!!",HttpStatus.OK);
   }
 
   @Override
-  public String delete(String code) {
+  public ResponseEntity<String> delete(String code) {
     TeacherEntity teacherEntity = teacherRepository.findByCode(code);
+    try{
+      if(code.isEmpty()){
+        throw new CommonException("Code is not null", HttpStatus.BAD_REQUEST,"1001");
+      }
+    }catch (CommonException e){
+      return globalException.handleCommonException(e);
+    }
     teacherRepository.delete(teacherEntity);
-    return "Deleted!!";
+    return new ResponseEntity<>("Deleted!!",HttpStatus.OK);
   }
 
   @Override

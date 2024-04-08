@@ -2,7 +2,6 @@ package com.university.controller;
 
 import com.university.dto.TeacherReq;
 import com.university.dto.TeacherRes;
-import com.university.service.CommonException;
 import com.university.service.TeacherService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,36 +26,21 @@ public class TeacherContoller {
 
   @PostMapping("/create")
   public ResponseEntity<String> create(@Valid @RequestBody TeacherReq teacherReq) {
-    String teacherRes;
-    try {
-      teacherRes = teacherService.create(teacherReq);
-    } catch (CommonException e) {
-      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
-    }
-    return new ResponseEntity<>(teacherRes, HttpStatus.OK);
+
+    return teacherService.create(teacherReq);
   }
 
   @PutMapping("/update/{code}")
   public ResponseEntity<String> update(@PathVariable String code,
       @Valid @RequestBody TeacherReq teacherReq) {
-    String teacherRes;
-    try {
-      teacherRes = teacherService.update(code, teacherReq);
-    } catch (CommonException e) {
-      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
-    }
-    return new ResponseEntity<>(teacherRes, HttpStatus.OK);
+
+    return teacherService.update(code, teacherReq);
   }
 
   @DeleteMapping("/delete/{code}")
   public ResponseEntity<String> delete(@PathVariable String code) {
-    String del;
-    try {
-      del = teacherService.delete(code);
-    } catch (CommonException e) {
-      return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
-    }
-    return new ResponseEntity<>(del, HttpStatus.OK);
+
+    return teacherService.delete(code);
   }
 
   @GetMapping("/view/{code}")

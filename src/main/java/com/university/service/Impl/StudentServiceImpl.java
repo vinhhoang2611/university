@@ -9,10 +9,12 @@ import com.university.repository.StudentRepository;
 import com.university.repository.UniversityRepository;
 import com.university.service.CommonException;
 import com.university.service.StudentService;
+import com.university.service.exception.GlobalException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,39 +25,53 @@ public class StudentServiceImpl implements StudentService {
   StudentRepository studentRepository;
   @Autowired
   UniversityRepository universityRepository;
+  @Autowired
+  GlobalException globalException;
 
   @Override
-  public String create(StudentReq studentReq) {
+  public ResponseEntity<String> create(StudentReq studentReq) {
     StudentEntity studentEntityCheck = studentRepository.findByCode(studentReq.getCode());
-    getException(studentReq.getCode(), studentReq.getEmail(), studentEntityCheck,
-        studentReq.getPhone(), studentReq.getUniversityCode());
-    StudentEntity studentEntity = StudentMapper.INSTANCE.reqToEntity(studentReq);
+    try {
+      getException(studentReq.getCode(), studentReq.getEmail(), studentEntityCheck,
+          studentReq.getPhone(), studentReq.getUniversityCode());
 
+    } catch (CommonException e) {
+      return globalException.handleCommonException(e);
+    }
+
+    StudentEntity studentEntity = StudentMapper.INSTANCE.reqToEntity(studentReq);
     studentRepository.save(studentEntity);
-    return "Created!!";
+    return new ResponseEntity<>("Created!!", HttpStatus.OK);
   }
 
   @Override
-  public String update(String code, StudentReq studentReq) {
+  public ResponseEntity<String> update(String code, StudentReq studentReq) {
     StudentEntity studentEntity = studentRepository.findByCode(code);
-    getException(code, studentReq.getEmail(), null,
-        studentReq.getPhone(),studentReq.getUniversityCode());
-
-    StudentEntity studentEntitySave = StudentMapper.INSTANCE.updStudent(studentReq,studentEntity);
+    try {
+      getException(code, studentReq.getEmail(), null,
+          studentReq.getPhone(), studentReq.getUniversityCode());
+    }catch (CommonException e){
+      return globalException.handleCommonException(e);
+    }
+    StudentEntity studentEntitySave = StudentMapper.INSTANCE.updStudent(studentReq, studentEntity);
 
     studentRepository.save(studentEntitySave);
 
-    return "Update Successful!!";
+    return new ResponseEntity<>("Update Successful!!",HttpStatus.OK);
   }
 
   @Override
-  public String delete(String code) {
+  public ResponseEntity<String> delete(String code) {
     StudentEntity studentEntity = studentRepository.findByCode(code);
-    if (code.isEmpty()) {
-      throw new CommonException("Code is not null", HttpStatus.BAD_REQUEST, "202");
+    try {
+      if (code.isEmpty()) {
+        throw new CommonException("Code is not null", HttpStatus.BAD_REQUEST, "202");
+      }
+    }catch (CommonException e){
+      return globalException.handleCommonException(e);
     }
     studentRepository.delete(studentEntity);
-    return "Deleted!!";
+    return new ResponseEntity<>("Deleted!!",HttpStatus.OK);
   }
 
   @Override
@@ -71,7 +87,7 @@ public class StudentServiceImpl implements StudentService {
   }
 
   private void getException(String code, String email, StudentEntity studentEntity,
-      Integer phone, String universityCode) {
+      Integer phone, String universityCode) throws CommonException {
     String emailRegex = "^[A-Za-z0-9]+[A-Za-z0-9]*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)$";
     String codeRegex = "^[A-Za]{2}+[0-9]{5}$";
     UniversityEntity university = universityRepository.findByCode(universityCode);

@@ -6,9 +6,10 @@ import com.university.entity.InformationEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface InformationMapper {
     InformationMapper INSTANCE = Mappers.getMapper(InformationMapper.class);
     @Mapping(source = "code",target = "code")

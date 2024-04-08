@@ -16,7 +16,7 @@ public interface ScheduleMapper {
 
   ScheduleEntity reqToEntity(ScheduleReq scheduleReq);
 
-  ScheduleRes entiyToRes(ScheduleEntity scheduleEntity);
+  ScheduleRes entityToRes(ScheduleEntity scheduleEntity);
 
   @Mapping(source = "code", target = "code")
   ScheduleEntity updSchedule(ScheduleReq scheduleReq,@MappingTarget ScheduleEntity scheduleEntity);

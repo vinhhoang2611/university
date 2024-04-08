@@ -46,7 +46,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     List<ScheduleRes> scheduleResList = new ArrayList<>();
     for (ScheduleEntity schedule : scheduleEntity){
       ScheduleRes scheduleRes;
-      scheduleRes = ScheduleMapper.INSTANCE.entiyToRes(schedule);
+      scheduleRes = ScheduleMapper.INSTANCE.entityToRes(schedule);
       scheduleResList.add(scheduleRes);
     }
     return scheduleResList;
